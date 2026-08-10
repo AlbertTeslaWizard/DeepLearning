@@ -15,6 +15,8 @@ class MyModel(nn.Module):
         return x
 
 if __name__ == '__main__':
+    torch.manual_seed(42)
+
     X = torch.randn(1000, 2)
     Y = ((X[:, 0] ** 2 + X[:, 1] ** 2) < 1).float().unsqueeze(1)
 
