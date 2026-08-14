@@ -5,3 +5,4 @@ __pycache__/
 best_model_epoch
 .codex-staging/
 *.pth
+*.pt

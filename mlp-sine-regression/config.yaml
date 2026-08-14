@@ -1,0 +1,11 @@
+seed: 42
+num_samples: 2500
+train_ratio: 0.8
+batch_size: 32
+epochs: 100
+lr: 0.01
+weight_decay: 0.0001
+patience: 15
+save_path: "best_model.pth"
+T_max: 50
+eta_min: 0.00001
