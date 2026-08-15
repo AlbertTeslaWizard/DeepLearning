@@ -9,3 +9,4 @@ patience: 15
 save_path: "best_model.pth"
 T_max: 50
 eta_min: 0.00001
+max_grad_norm: 1.0 # 梯度裁剪的最大范数 (设置为0 或 null 表示不裁剪)

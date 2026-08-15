@@ -3,10 +3,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
-
 from models import RegularizedModel
 from datasets import SineDataset
 from utils import EarlyStop
+from torch.nn.utils import clip_grad_norm_
 
 def main():
     with open("config.yaml", "r") as f:
@@ -50,6 +50,14 @@ def main():
 
             optimizer.zero_grad()
             loss.backward()
+
+            if cfg["max_grad_norm"]:
+                clip_grad_norm_(
+                    model.parameters(),
+                    max_norm = cfg["max_grad_norm"],
+                    norm_type = 2.0
+                )
+                
             optimizer.step()
 
             train_loss += loss.item() * len(x)
