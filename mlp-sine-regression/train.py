@@ -7,6 +7,7 @@ from models import RegularizedModel
 from datasets import SineDataset
 from utils import EarlyStop
 from torch.nn.utils import clip_grad_norm_
+import torch.amp as amp 
 
 def main():
     with open("config.yaml", "r") as f:
@@ -38,6 +39,9 @@ def main():
     optimizer = optim.AdamW(model.parameters(), lr=cfg["lr"], weight_decay=cfg["weight_decay"])
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=cfg["T_max"], eta_min=cfg["eta_min"])
     earlystop = EarlyStop(patience=cfg["patience"], save_path=cfg["save_path"])
+    
+    # 初始化梯度缩放器 (仅在 CUDA 下生效)
+    scaler = amp.GradScaler('cuda', enabled=(device.type == 'cuda'))
 
     for epoch in range(cfg["epochs"]):
         model.train()
@@ -45,20 +49,35 @@ def main():
 
         for x, y in train_dataloader:
             x, y = x.to(device), y.to(device)
-            y_pred = model(x)
-            loss = loss_fn(y_pred, y)
+            # y_pred = model(x)
+            # loss = loss_fn(y_pred, y)
 
             optimizer.zero_grad()
-            loss.backward()
+
+            # 前向传播包裹在autocast上下文中
+            with amp.autocast('cuda', enabled=(device.type == 'cuda')):
+                y_pred = model(x)
+                loss = loss_fn(y_pred, y)
+
+            # loss.backward()
+
+            # 使用scaler缩放 loss 并反向传播 
+            scaler.scale(loss).backward()
 
             if cfg["max_grad_norm"]:
+                # 梯度裁剪前必须先取消梯度缩放
+                scaler.unscale_(optimizer)
                 clip_grad_norm_(
                     model.parameters(),
                     max_norm = cfg["max_grad_norm"],
                     norm_type = 2.0
                 )
                 
-            optimizer.step()
+            # optimizer.step()
+
+            # 使用 scaler 执行更新并更新缩放因子
+            scaler.step(optimizer)
+            scaler.update()
 
             train_loss += loss.item() * len(x)
         avg_train_loss = train_loss / train_size
