@@ -3,17 +3,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ResBlock(nn.Module):
-    def __init__(self, dim: int = 64, dropout_p: float = 0.1):
+    def __init__(self, dim, dropout_p):
         super().__init__()
         self.fc1 = nn.Linear(dim, dim)
         self.norm1 = nn.LayerNorm(dim)
+        
         self.fc2 = nn.Linear(dim, dim)
         self.norm2 = nn.LayerNorm(dim)
-        self.dropout = nn.Dropout(p=dropout_p)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        residual = x
-        
+        self.dropout = nn.Dropout(p = dropout_p)
+
+
+    def forward(self, x):
+        residual = x 
+
         out = self.fc1(x)
         out = self.norm1(out)
         out = F.relu(out)
@@ -21,29 +24,30 @@ class ResBlock(nn.Module):
 
         out = self.fc2(out)
         out = self.norm2(out)
-        
-        out = F.relu(out + residual)
         out = self.dropout(out)
+
+        out = out + residual
         return out
 
+
 class ResidualMLP(nn.Module):
-    def __init__(self, hidden_dim: int = 64, num_blocks: int = 2, dropout_p: float = 0.1):
+    def __init__(self, hidden_dim = 64, num_blocks = 2, dropout_p = 0.1):
         super().__init__()
         self.in_proj = nn.Linear(1, hidden_dim)
         self.res_blocks = nn.Sequential(
             *[
-                ResBlock(dim = hidden_dim, dropout_p = dropout_p) 
+                ResBlock(dim = hidden_dim, dropout_p = dropout_p)
                 for _ in range(num_blocks)
             ]
         )
         self.out_proj = nn.Linear(hidden_dim, 1)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = F.relu(self.in_proj(x))
-        x = self.res_blocks(x)
-        x = self.out_proj(x)
+    def forward(self, x):
+        out = self.in_proj(x)
+        out = self.res_blocks(out)
+        out = self.out_proj(out)
 
-        return x 
+        return out
 
 class RegularizedModel(nn.Module):
     def __init__(self):
