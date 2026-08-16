@@ -1,14 +1,14 @@
 import math
 import yaml 
 import torch 
-from models import RegularizedModel
+from models import ResidualMLP
 
 def main():
     with open("config.yaml", "r") as f:
         cfg = yaml.safe_load(f)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = RegularizedModel().to(device)
+    model = ResidualMLP().to(device)
     model.load_state_dict(torch.load(cfg["save_path"], map_location=device, weights_only=True))
     model.eval()
     

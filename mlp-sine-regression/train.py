@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
-from models import RegularizedModel
+from models import ResidualMLP
 from datasets import SineDataset
 from utils import EarlyStop
 from torch.nn.utils import clip_grad_norm_
@@ -34,7 +34,7 @@ def main():
         shuffle = False 
     )
     
-    model = RegularizedModel().to(device)
+    model = ResidualMLP().to(device)
     loss_fn = nn.MSELoss()
     optimizer = optim.AdamW(model.parameters(), lr=cfg["lr"], weight_decay=cfg["weight_decay"])
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=cfg["T_max"], eta_min=cfg["eta_min"])
@@ -106,7 +106,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 
 
