@@ -5,10 +5,10 @@ import torch.optim as optim
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class SimpleRNN(nn.Module):
+class SimpleLSTM(nn.Module):
     def __init__(self):
         super().__init__()
-        self.rnn = nn.RNN(
+        self.lstm = nn.LSTM(
             input_size = 1,
             hidden_size = 32,
             batch_first = True 
@@ -17,7 +17,7 @@ class SimpleRNN(nn.Module):
         self.fc = nn.Linear(32, 1)
 
     def forward(self, x):
-        out, h_n = self.rnn(x)
+        out, (h_n, c_n) = self.lstm(x)
         out = out[:, -1, :]
         out = self.fc(out)
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         shuffle = True
     )
 
-    model = SimpleRNN().to(device)
+    model = SimpleLSTM().to(device)
     loss_fn = nn.MSELoss()
     optimizer = optim.AdamW(model.parameters(), lr = 0.001)
     epochs = 20
