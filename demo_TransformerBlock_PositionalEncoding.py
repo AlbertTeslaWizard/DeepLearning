@@ -17,7 +17,7 @@ class PositionalEncoding(nn.Module):
         # (d_model / 2)
         inv_freq = torch.exp(dim_indices * -math.log(10000.0) / d_model)
         
-        # (max_len, 1) * (1, d_model / 2) => (max_len, d_model / 2)        
+        # (max_len, 1) (1, d_model / 2) => (max_len, d_model / 2)        
         angles = pos * inv_freq
         
         # (max_len, d_model)
