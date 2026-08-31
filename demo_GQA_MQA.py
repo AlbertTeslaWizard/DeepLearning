@@ -5,7 +5,7 @@ import math
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class GroupedQueryAttention(nn.Module):
-    def __init__(self, d_model=64, num_heads=4, num_kv_heads=2):
+    def __init__(self, d_model=64, num_heads=4, num_kv_heads=2, is_causal=True):
         super().__init__()
         assert num_heads % num_kv_heads == 0, "num_heads 需要能被 num_kv_heads 整除"
 
@@ -13,6 +13,7 @@ class GroupedQueryAttention(nn.Module):
         self.num_kv_heads = num_kv_heads
         self.d_head = d_model // num_heads
         self.num_queries_per_kv = num_heads // num_kv_heads
+        self.is_causal = is_causal 
 
         self.W_q = nn.Linear(d_model, d_model)
         self.W_k = nn.Linear(d_model, self.num_kv_heads * self.d_head)
@@ -32,6 +33,11 @@ class GroupedQueryAttention(nn.Module):
             V = V.repeat_interleave(self.num_queries_per_kv, dim = 1)
 
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_head)
+        
+        if self.is_causal:
+            mask = torch.triu(torch.ones(L, L, dtype = torch.bool, device = x.device), diagonal = 1)
+            scores = scores.masked_fill(mask, float('-inf'))
+
         attention = torch.softmax(scores, dim = -1)
 
         out = torch.matmul(attention, V)
