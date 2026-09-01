@@ -1,6 +1,7 @@
 import torch 
 import torch.nn as nn 
-import math 
+import math
+from demo_RoPE import apply_rotary_pos_emb
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -21,12 +22,25 @@ class GroupedQueryAttention(nn.Module):
 
         self.W_o = nn.Linear(d_model, d_model)
 
-    def forward(self, x):
+    def forward(self, x, cos=None, sin=None):
         B, L, _ = x.shape
         
-        Q = self.W_q(x).view(B, L, self.num_heads, self.d_head).transpose(1, 2)
-        K = self.W_k(x).view(B, L, self.num_kv_heads, self.d_head).transpose(1, 2)
-        V = self.W_v(x).view(B, L, self.num_kv_heads, self.d_head).transpose(1, 2)
+        Q = self.W_q(x).view(B, L, self.num_heads, self.d_head)
+        K = self.W_k(x).view(B, L, self.num_kv_heads, self.d_head)
+        V = self.W_v(x).view(B, L, self.num_kv_heads, self.d_head)
+        
+        if (cos is None) != (sin is None):
+            raise ValueError(
+                "cos and sin must either both be provided or both be None"
+            )
+        
+        if cos is not None:
+            Q = apply_rotary_pos_emb(Q, cos, sin)
+            K = apply_rotary_pos_emb(K, cos, sin)
+
+        Q = Q.transpose(1, 2)
+        K = K.transpose(1, 2)
+        V = V.transpose(1, 2)
 
         if self.num_queries_per_kv > 1:
             K = K.repeat_interleave(self.num_queries_per_kv, dim = 1)
