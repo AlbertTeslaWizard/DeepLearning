@@ -56,8 +56,5 @@ if __name__ == '__main__':
         d_ff = 256
     ).to(device)
 
-    output = model(input_ids)
-    print(output.shape)
-
-
-
+    logits = model(input_ids)
+    print(logits.shape)
