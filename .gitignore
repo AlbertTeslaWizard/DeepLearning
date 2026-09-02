@@ -16,3 +16,4 @@ best_model_epoch
 *.bz2
 *.xz
 data/*
+*.json
