@@ -33,11 +33,11 @@ class GroupedQueryAttention(nn.Module):
             raise ValueError(
                 "cos and sin must either both be provided or both be None"
             )
-        
+
         if cos is not None:
             Q = apply_rotary_pos_emb(Q, cos, sin)
             K = apply_rotary_pos_emb(K, cos, sin)
-
+        
         Q = Q.transpose(1, 2)
         K = K.transpose(1, 2)
         V = V.transpose(1, 2)

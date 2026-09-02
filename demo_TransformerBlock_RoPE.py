@@ -17,12 +17,12 @@ class TransformerBlock(nn.Module):
 
         self.norm1 = RMSNorm(dim = d_model)
         self.norm2 = RMSNorm(dim = d_model)
-
+        
         self.rope = RoPE(head_dim = self.head_dim)
 
     def forward(self, x):
         seq_len = x.shape[1]
-        cos, sin = self.rope(seq_len, x.device)
+        cos, sin = self.rope(seq_len, device = x.device)
 
         x = x + self.attention(self.norm1(x), cos = cos, sin = sin)
         x = x + self.ffn(self.norm2(x)) 
