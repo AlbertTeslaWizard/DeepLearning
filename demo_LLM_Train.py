@@ -48,6 +48,8 @@ if __name__ == '__main__':
         if epoch == 0 or (epoch + 1) % 10 == 0:
             print(
                 f"Epoch {epoch + 1:3d}/{epochs} | "
-                    f"Loss: {loss.item():.4f}"
+                f"Loss: {loss.item():.4f}"
             )
-
+    
+    torch.save(model.state_dict(), "mini_llm.pt")
+    print("\nModel saved to mini_llm.pt")
