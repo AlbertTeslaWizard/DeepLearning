@@ -6,39 +6,14 @@ from demo_MiniLLM import MiniLLM
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-if __name__ == "__main__":
-    text = "I love Yuri Nakamura and Computer Science!"
-    # 本机访问不了 huggingface.co，但 gpt2 已缓存在本地，
-    # 用 local_files_only=True 强制只用本地缓存，避免联网卡死
-    tokenizer = AutoTokenizer.from_pretrained("gpt2", local_files_only=True)
-
-    # input_ids:
-    # [B, L]
-
-    input_ids = tokenizer.encode(
-        text, add_special_tokens=False, return_tensors="pt"
-    ).to(device)
-
-    model = MiniLLM(
-        vocab_size=tokenizer.vocab_size,
-        num_layers=4,
-        d_model=64,
-        num_heads=4,
-        num_kv_heads=2,
-        d_ff=256,
-    ).to(device)
-
-    # Logits
-    # [B, L, V] V = vocab_size
-
-    logits = model(input_ids)
-
+def next_token_loss(logits, input_ids):
     # Logits 去掉最后一个位置:
     # [B, L, V] -> [B, L - 1, V]
     # [B, L] -> [B, L - 1]
-
     shift_logits = logits[:, :-1, :]
     targets = input_ids[:, 1:]
+
+    vocab_size = logits.shape[-1]
 
     # ------------------------------------------------------------
     # 5. CrossEntropy Loss
@@ -75,8 +50,38 @@ if __name__ == "__main__":
     # 4. 对 N 个样本的 loss 默认取平均
 
     loss = F.cross_entropy(
-        shift_logits.reshape(-1, tokenizer.vocab_size), targets.reshape(-1)
+        shift_logits.reshape(-1, vocab_size),
+        targets.reshape(-1)
     )
+
+    return loss
+
+if __name__ == "__main__":
+    text = "I love Yuri Nakamura and Computer Science!"
+    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+
+    # input_ids:
+    # [B, L]
+
+    input_ids = tokenizer.encode(
+        text, add_special_tokens=False, return_tensors="pt"
+    ).to(device)
+
+    model = MiniLLM(
+        vocab_size=tokenizer.vocab_size,
+        num_layers=4,
+        d_model=64,
+        num_heads=4,
+        num_kv_heads=2,
+        d_ff=256,
+    ).to(device)
+
+    # Logits
+    # [B, L, V] V = vocab_size
+
+    logits = model(input_ids)
+
+    loss = next_token_loss(logits, input_ids)
 
     print("Text:")
     print(text)
@@ -87,14 +92,8 @@ if __name__ == "__main__":
     print("\nLogits shape:")
     print(logits.shape)
 
-    print("\nShift logits shape:")
-    print(shift_logits.shape)
-
-    print("\nTargets shape:")
-    print(targets.shape)
-
-    print("\nFlattened logits shape:")
-    print(shift_logits.reshape(-1, tokenizer.vocab_size).shape)
-
-    print("\nLoss:")
+    print("\nloss:")
     print(loss.item())
+
+
+
