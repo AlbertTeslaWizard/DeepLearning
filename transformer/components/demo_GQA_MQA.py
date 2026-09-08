@@ -1,7 +1,7 @@
 import torch 
 import torch.nn as nn 
 import math
-from demo_RoPE import apply_rotary_pos_emb
+from transformer.components.demo_RoPE import apply_rotary_pos_emb
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

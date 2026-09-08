@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from transformers import AutoTokenizer
-from demo_TransformerBlock_RoPE import TransformerBlock
+from transformer.blocks.demo_TransformerBlock_RoPE import TransformerBlock
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

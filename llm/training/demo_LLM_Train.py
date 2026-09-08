@@ -3,8 +3,8 @@ import torch.optim as optim
 
 from transformers import AutoTokenizer
 
-from demo_MiniLLM import MiniLLM
-from demo_NextTokenLoss import next_token_loss
+from llm.modeling.demo_MiniLLM import MiniLLM
+from llm.training.demo_NextTokenLoss import next_token_loss
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

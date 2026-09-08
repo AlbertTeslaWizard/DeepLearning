@@ -1,8 +1,8 @@
 import torch 
 import torch.nn as nn
 
-from demo_LLM_Backbone import LLMBackbone
-from demo_RMSNorm import RMSNorm
+from llm.modeling.demo_LLM_Backbone import LLMBackbone
+from transformer.components.demo_RMSNorm import RMSNorm
 from transformers import AutoTokenizer
 
 class MiniLLM(nn.Module):

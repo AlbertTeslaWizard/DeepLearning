@@ -1,7 +1,7 @@
 import torch 
 import torch.nn as nn
 
-from demo_TransformerStack import TransformerStack
+from transformer.blocks.demo_TransformerStack import TransformerStack
 from transformers import AutoTokenizer
 
 class LLMBackbone(nn.Module):

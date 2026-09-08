@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer 
 
-from demo_MiniLLM import MiniLLM
+from llm.modeling.demo_MiniLLM import MiniLLM
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

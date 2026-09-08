@@ -1,15 +1,15 @@
 import torch
 import torch.nn as nn
-from demo_GQA_MQA import GroupedQueryAttention
-from demo_SwiGLU_FFN import SwiGLUFFN
-from demo_RMSNorm import RMSNorm
+from transformer.components.demo_GQA_MQA import GroupedQueryAttention
+from transformer.components.demo_SwiGLU_FFN import SwiGLUFFN
+from transformer.components.demo_RMSNorm import RMSNorm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class TransformerBlock(nn.Module):
     def __init__(self, d_model = 64, num_heads = 4, num_kv_heads = 2, d_ff = 256):
         super().__init__()
-        self.attention = GroupedQueryAttention(d_model = d_model, num_heads = num_heads, num_kv_heads = num_kv_heads, is_causal = True)
+        self.attention = GroupedQueryAttention(d_model = d_model, num_heads = num_heads, num_kv_heads = num_kv_heads)
 
         self.ffn = SwiGLUFFN(d_model = d_model, d_ff = d_ff)
 

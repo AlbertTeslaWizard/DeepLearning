@@ -1,7 +1,7 @@
 import torch 
 import torch.nn as nn
 
-from demo_TransformerBlock_RoPE import TransformerBlock
+from transformer.blocks.demo_TransformerBlock_RoPE import TransformerBlock
 
 class TransformerStack(nn.Module):
     def __init__(self, num_layers = 4, d_model = 64, num_heads = 4, num_kv_heads = 2, d_ff = 256):
