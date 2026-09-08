@@ -66,6 +66,7 @@ DeepLearning/
 │   │   └── demo_MiniLLM.py
 │   ├── tokenization/  # 分词与词嵌入
 │   │   ├── __init__.py
+│   │   ├── demo_LLM_AttentionMask.py
 │   │   ├── demo_LLM_BatchPadding.py
 │   │   ├── demo_TokenEmbedding.py
 │   │   └── demo_Tokenizer.py
@@ -158,6 +159,7 @@ DeepLearning/
 | [generation/demo_LLM_TopPSampling.py](llm/generation/demo_LLM_TopPSampling.py) | Top-p（核）采样 |
 | [modeling/demo_LLM_Backbone.py](llm/modeling/demo_LLM_Backbone.py) | 词嵌入与 Transformer 骨干 |
 | [modeling/demo_MiniLLM.py](llm/modeling/demo_MiniLLM.py) | 添加归一化与语言模型输出头 |
+| [tokenization/demo_LLM_AttentionMask.py](llm/tokenization/demo_LLM_AttentionMask.py) | 注意力掩码的形状变换与 padding 分数屏蔽 |
 | [tokenization/demo_LLM_BatchPadding.py](llm/tokenization/demo_LLM_BatchPadding.py) | 文本批的 padding 与注意力掩码 |
 | [tokenization/demo_TokenEmbedding.py](llm/tokenization/demo_TokenEmbedding.py) | 词嵌入接入 TransformerBlock |
 | [tokenization/demo_Tokenizer.py](llm/tokenization/demo_Tokenizer.py) | 文本、token 与 token ID 的转换 |
